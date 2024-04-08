@@ -47,7 +47,7 @@ function buttonClick(event) {
             percentage();
             break;
         case 'decimal':
-            decimal();
+            decimal(value);
             break;
     }
 
@@ -58,8 +58,22 @@ function buttonClick(event) {
 inputBox.addEventListener('click', buttonClick);
 
 function addValue(value) {
-    //agregar valor a la expresion
-    expression += value;
+    if (value === '.') {
+        const lastOperatorIndex = expression.search(/[+\-*/]/);
+        const lastDecimalIndex = expression.lastIndexOf('.');
+        const lastNumberIndex = Math.max(
+        expression.lastIndexOf('+'),
+        expression.lastIndexOf('-'),
+        expression.lastIndexOf('*'),
+        expression.lastIndexOf('/')
+        );
+        if ((lastDecimalIndex < lastOperatorIndex || lastDecimalIndex < lastNumberIndex || lastDecimalIndex === -1) && (expression === '' || expression.slice(lastNumberIndex + 1).indexOf('-') === -1)
+        ) {
+            expression += value;
+        }
+    } else {
+        expression += value;
+    }
 }
 
 function updateDisplay(expresion, result) {
@@ -120,4 +134,10 @@ function percentage() {
     } else if (result !== '') {
         result = parseFloat(result) / 100;
     }
+}
+
+function decimal(value) {
+    if (!expression.endsWith('.') && !isNaN(expression.slice(-1))) {
+        addValue(value)
+    } 
 }
